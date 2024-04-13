@@ -18,6 +18,33 @@ async def get_filter_mangas(**kwargs) -> Union[Dict[str, Any], int]:
         "mangas": mangas
     }
 
+async def get_top_mangas() -> Union[Dict[str, Any], int]:
+    response: Any = await api.get(endpoint="/",  html=True)
+    
+    if type(response) is int:
+        return CRASH
+
+    soup = get_soup(response)
+    items: List = soup.select('.owl-item')
+    mangas: List[Dict[str, Any]] = []
+
+    for item in items:
+        link_ele = item.select('.text-nowrap.a-h')[0]
+        title = link_ele.get('title')
+        slug = link_ele.get('href').replace("https://manganato.com", "").replace("https://chapmanganato.to", "")
+        image_url = item.select('.img-loading')[0].get('src')
+
+        mangas.append({
+            "title": title,
+            "image_url": image_url,
+            "slug": slug,
+        })
+
+
+    return {
+        "mangas": mangas
+    }
+
 def get_soup(html) -> BeautifulSoup:
     return BeautifulSoup(html, 'html.parser')
 
