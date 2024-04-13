@@ -36,8 +36,8 @@ async def ongoing_mangas() -> JSONResponse:
      return response.successful_response({"data": data })
 
 @router.get("/genres/{genre}")
-async def genre_mangas() -> JSONResponse:
-     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint="/genre-{genre}", params={"type": "newest"})
+async def genre_mangas(genre: int) -> JSONResponse:
+     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint=f"/genre-{genre}", params={"type": "newest"})
      if data == CRASH:
           return response.bad_request_response()
 
