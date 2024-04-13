@@ -6,13 +6,23 @@ from pprint import pprint
 
 api = ApiHandler("https://manganato.com")
 
-async def get_recent_manga() -> Union[Dict[str, Any], int]:
-    response: Any = await api.get(endpoint="/genre-all", html=True)
+async def get_filter_mangas(**kwargs) -> Union[Dict[str, Any], int]:
+    response: Any = await api.get(**kwargs,  html=True)
     
     if type(response) is int:
         return CRASH
 
-    soup = get_soup(html=response)
+    mangas  = get_filter_page_mangas(html=response)
+
+    return {
+        "mangas": mangas
+    }
+
+def get_soup(html) -> BeautifulSoup:
+    return BeautifulSoup(html, 'html.parser')
+
+def get_filter_page_mangas(html) -> List[Dict[str, Any]]:
+    soup = get_soup(html)
     items: List = soup.select('.content-genres-item')
     mangas: List[Dict[str, Any]] = []
 
@@ -45,9 +55,5 @@ async def get_recent_manga() -> Union[Dict[str, Any], int]:
             "score": score,
         })
 
-    return {
-        "mangas": mangas
-    }
 
-def get_soup(html) -> BeautifulSoup:
-    return BeautifulSoup(html, 'html.parser')
+    return mangas
