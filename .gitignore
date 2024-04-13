@@ -3,7 +3,6 @@ notes.txt
 temp.txt
 env
 app/tests/*
-JSONs/*
 scripts
 *.env
 *.log
