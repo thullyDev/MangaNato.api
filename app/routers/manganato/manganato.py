@@ -55,6 +55,7 @@ async def get_manga(manga_id, **kwargs) -> Union[Dict[str, Any], int]:
     return {
         "manga": {
             "manga_id": manga_id,
+            "image_url": image_url,
             "title": title,
             "alt_names": alt_names,
             "status": status,
