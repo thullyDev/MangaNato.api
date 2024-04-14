@@ -5,6 +5,63 @@ from app.resources.errors import CRASH, NOT_FOUND
 from pprint import pprint
 
 api = ApiHandler("https://manganato.com")
+api2 = ApiHandler("https://chapmanganato.to")
+
+async def get_manga(manga_id, **kwargs) -> Union[Dict[str, Any], int]:
+    response: Any = await api2.get(**kwargs,  html=True)
+    
+    if type(response) is int:
+        return CRASH
+
+    soup: BeautifulSoup = get_soup(response)
+    title = soup.select('.story-info-right > h1')[0].text
+    description = soup.select('.panel-story-info-description')[0].text.replace("Description :", "").strip()
+    alt_names = soup.select('.variations-tableInfo .table-value > h2')[0].text
+    status = soup.select('.variations-tableInfo .table-value')[2].text
+    link_eles = soup.select('.variations-tableInfo .table-value > .a-h')
+    chapter_eles = soup.select('.row-content-chapter > .a-h')
+    authors_genres: Dict[str, List[Dict[str, str]]] = {
+        "genres": [],
+        "authors": [],
+        "chapters": [],
+    }
+
+    for chapter_ele in chapter_eles:
+        link: Any = chapter_ele.select(".chapter-name")[0]
+        href: Any = link.get("href").replace(manga_id, "")
+        name: Any = link.get("title")
+        views: Any = chapter_ele.select(".chapter-view")[0].text
+        _date: Any = chapter_ele.select(".chapter-time")[0].get("title")
+        slug = href.replace("https://chapmanganato.to/", "").replace("https://manganato.com", "")
+        authors_genres["chapters"].append({
+            "name": name,
+            "slug": slug,
+            "views": views,
+            "date": _date,
+        })
+
+    for link in link_eles:
+        href: Any = link.get("href")
+        _id = "authors" if "author" in href else "genres"
+        name = link.text
+        slug = href.replace("https://manganato.com/author/story", "").replace("https://manganato.com", "")
+        authors_genres[_id].append({
+            "name": name,
+            "slug": slug,
+        })
+
+    image_url = soup.select('.img-loading')[0].get('src')
+
+    return {
+        "manga": {
+            "manga_id": manga_id,
+            "title": title,
+            "alt_names": alt_names,
+            "status": status,
+            "description": description,
+            **authors_genres
+        }
+    }
 
 async def get_filter_mangas(**kwargs) -> Union[Dict[str, Any], int]:
     response: Any = await api.get(**kwargs,  html=True)

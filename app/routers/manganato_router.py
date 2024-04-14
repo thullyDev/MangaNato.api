@@ -4,7 +4,12 @@ from fastapi.responses import JSONResponse
 from app.handlers.response_handler import ResponseHandler
 from app.resources.errors import CRASH, NOT_FOUND
 from typing import Any, Dict, List, Union
-from app.routers.manganato.manganato import get_filter_mangas, get_top_mangas, get_search_mangas
+from app.routers.manganato.manganato import (
+     get_filter_mangas, 
+     get_top_mangas, 
+     get_search_mangas, 
+     get_manga
+)
 
 router: APIRouter = APIRouter(prefix="/manga")
 response: ResponseHandler = ResponseHandler()
@@ -37,7 +42,7 @@ async def ongoing_mangas() -> JSONResponse:
 
 @router.get("/genres/{genre}")
 async def genre_mangas(genre: int) -> JSONResponse:
-     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint=f"/genre-{genre}", params={"type": "newest"})
+     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint=f"/{genre}", params={"type": "newest"})
      if data == CRASH:
           return response.bad_request_response()
 
@@ -46,6 +51,14 @@ async def genre_mangas(genre: int) -> JSONResponse:
 @router.get("/search/{query}")
 async def search_mangas(query: str) -> JSONResponse:
      data: Union[Dict[str, Any], int] = await get_search_mangas(endpoint=f"/search/story/{query}")
+     if data == CRASH:
+          return response.bad_request_response()
+
+     return response.successful_response({"data": data })
+
+@router.get("/{manga_id}")
+async def manga(manga_id: str) -> JSONResponse:
+     data: Union[Dict[str, Any], int] = await get_manga(endpoint=f"/{manga_id}", manga_id=manga_id)
      if data == CRASH:
           return response.bad_request_response()
 
