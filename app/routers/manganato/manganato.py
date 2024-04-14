@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 from app.handlers.api_handler import ApiHandler
 from app.resources.errors import CRASH, NOT_FOUND
 from pprint import pprint
+from urllib import parse
+import base64
 
 api = ApiHandler("https://manganato.com")
 api2 = ApiHandler("https://chapmanganato.to")
@@ -135,7 +137,7 @@ async def get_panels(*, chapter_id, manga_id, **kwargs) -> Union[Dict[str, Any],
             "image_url": image_url,
             "title": title,
         })
-        
+
     return {
         "panels": panels,
     }
