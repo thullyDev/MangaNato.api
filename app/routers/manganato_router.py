@@ -8,7 +8,8 @@ from app.routers.manganato.manganato import (
      get_filter_mangas, 
      get_top_mangas, 
      get_search_mangas, 
-     get_manga
+     get_manga,
+     get_panels
 )
 
 router: APIRouter = APIRouter(prefix="/manga")
@@ -59,6 +60,18 @@ async def search_mangas(query: str) -> JSONResponse:
 @router.get("/{manga_id}")
 async def manga(manga_id: str) -> JSONResponse:
      data: Union[Dict[str, Any], int] = await get_manga(endpoint=f"/{manga_id}", manga_id=manga_id)
+     if data == CRASH:
+          return response.bad_request_response()
+
+     return response.successful_response({"data": data })
+
+@router.get("/{manga_id}/{chapter_id}")
+async def read(chapter_id: str, manga_id: str) -> JSONResponse:
+     data: Union[Dict[str, Any], int] = await get_panels(
+          endpoint=f"/{manga_id}/{chapter_id}", 
+          manga_id=manga_id, 
+          chapter_id=chapter_id
+     )
      if data == CRASH:
           return response.bad_request_response()
 

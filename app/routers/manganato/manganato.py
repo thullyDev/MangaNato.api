@@ -119,6 +119,27 @@ async def get_top_mangas() -> Union[Dict[str, Any], int]:
         "mangas": mangas
     }
 
+async def get_panels(*, chapter_id, manga_id, **kwargs) -> Union[Dict[str, Any], int]:
+    response: Any = await api2.get(**kwargs,  html=True)
+    
+    if type(response) is int:
+        return CRASH
+
+    soup: BeautifulSoup = get_soup(response)
+    panel_eles: List = soup.select('.container-chapter-reader > img')
+    panels: List[Dict[str, str]] = []
+    for panel in panel_eles:
+        image_url = panel.get("src")
+        title = panel.get("title").replace("- MangaNato.com", "").strip()
+        panels.append({
+            "image_url": image_url,
+            "title": title,
+        })
+        
+    return {
+        "panels": panels,
+    }
+
 def get_soup(html) -> BeautifulSoup:
     return BeautifulSoup(html, 'html.parser')
 
