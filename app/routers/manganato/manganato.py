@@ -11,8 +11,9 @@ api2 = ApiHandler("https://chapmanganato.to")
 
 async def get_manga(manga_id, **kwargs) -> Union[Dict[str, Any], int]:
     response: Any = await api2.get(**kwargs,  html=True)
-    
-    if type(response) is int:
+    malsync_response: Any = await ApiHandler("https://api.malsync.moe").get(f"/page/MangaNato/{manga_id}")
+
+    if int in [type(malsync_response), type(response)]:
         return CRASH
 
     soup: BeautifulSoup = get_soup(response)
@@ -62,6 +63,7 @@ async def get_manga(manga_id, **kwargs) -> Union[Dict[str, Any], int]:
             "alt_names": alt_names,
             "status": status,
             "description": description,
+            **malsync_response,
             **authors_genres
         }
     }
