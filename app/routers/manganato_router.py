@@ -34,18 +34,18 @@ async def newest_mangas() -> JSONResponse:
 
 @router.get("/complete")
 async def complete_mangas() -> JSONResponse:
-     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint="/genre-all", params={"state": "completed"})
+     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint="/genre-all", params={"state": "completed", "type": "topview"})
      return response.successful_response({"data": data })
 
 
 @router.get("/ongoing")
 async def ongoing_mangas() -> JSONResponse:
-     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint="/genre-all", params={"state": "ongoing"})
+     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint="/genre-all", params={"state": "ongoing", "type": "topview"})
      return response.successful_response({"data": data })
 
 @router.get("/genres/{genre}")
 async def genre_mangas(genre: int) -> JSONResponse:
-     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint=f"/{genre}", params={"type": "newest"})
+     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint=f"/{genre}", params={"type": "topview"})
      if data == CRASH:
           return response.bad_request_response()
 
