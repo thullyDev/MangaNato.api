@@ -60,6 +60,11 @@ async def search_mangas(query: str) -> JSONResponse:
 
      return response.successful_response({"data": data })
 
+@router.get("/top")
+async def top_mangas() -> JSONResponse:
+     data: Union[Dict[str, Any], int] = await get_top_mangas()
+     return response.successful_response({"data": data })
+
 @router.get("/{manga_id}")
 async def manga(manga_id: str) -> JSONResponse:
      data: Union[Dict[str, Any], int] = await get_manga(endpoint=f"/{manga_id}", manga_id=manga_id)
@@ -80,11 +85,6 @@ async def read(chapter_id: str, manga_id: str) -> JSONResponse:
      if data == CRASH:
           return response.bad_request_response()
 
-     return response.successful_response({"data": data })
-
-@router.get("/top")
-async def top_mangas() -> JSONResponse:
-     data: Union[Dict[str, Any], int] = await get_top_mangas()
      return response.successful_response({"data": data })
 
 
