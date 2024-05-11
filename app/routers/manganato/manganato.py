@@ -103,7 +103,7 @@ async def get_top_mangas() -> Union[Dict[str, Any], int]:
         return CRASH
 
     soup = get_soup(response)
-    items: List = soup.select('.owl-item')
+    items: List = soup.select('.owl-carousel .item')
     mangas: List[Dict[str, Any]] = []
 
     for item in items:
