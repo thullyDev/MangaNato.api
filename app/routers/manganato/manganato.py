@@ -70,7 +70,7 @@ async def get_manga(manga_id, **kwargs) -> Union[Dict[str, Any], int]:
 
 async def get_filter_mangas(**kwargs) -> Union[Dict[str, Any], int]:
     response: Any = await api.get(**kwargs,  html=True)
-    
+
     if type(response) is int:
         return CRASH
 
@@ -150,9 +150,12 @@ def get_soup(html) -> BeautifulSoup:
 def get_filter_page_mangas(html: str, mangas: List[Dict[str, Any]], soup: BeautifulSoup) -> None:
     items: List = soup.select('.content-genres-item')
     for item in items:
-        chap_ele = item.select('.genres-item-chap.text-nowrap.a-h')[0]
-        chap_slug = chap_ele.get("href").replace("https://chapmanganato.to", "")
-        chap_name = chap_ele.get("title")
+        chap_ele = item.select('.item-chapter.text-nowrap.a-h')
+        if not chap_ele:
+            chap_ele = item.select('.genres-item-chap.text-nowrap.a-h') 
+        chap_ele = chap_ele[0] if chap_ele else {}
+        chap_slug = chap_ele.get("href", "").replace("https://chapmanganato.to", "")
+        chap_name = chap_ele.get("title", "")
         link_ele = item.select('.genres-item-img.bookmark_check')[0]
         title = link_ele.get('title')
         slug = link_ele.get('href').replace("https://manganato.com", "").replace("https://chapmanganato.to", "")
@@ -182,7 +185,7 @@ def get_search_page_mangas(html: str, mangas: List[Dict[str, Any]], soup: Beauti
     items: List = soup.select('.search-story-item')
     for item in items:
         chap_ele = item.select('.item-chapter.text-nowrap.a-h')[0]
-        chap_slug = chap_ele.get("href").replace("https://chapmanganato.to", "")
+        chap_slug = chap_ele.get("href",).replace("https://chapmanganato.to", "")
         chap_name = chap_ele.get("title")
         link_ele = item.select('.item-img.bookmark_check')[0]
         title = link_ele.get('title')

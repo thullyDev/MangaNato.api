@@ -8,6 +8,7 @@ class ApiHandler:
 
     async def request(self, endpoint: str, method: str = 'GET', image: bool =False, html: bool = False, **kwargs: Any) -> Union[Dict[str, Any], str, int, bytes]:
         url = self.BASE + endpoint
+
         async with aiohttp.ClientSession() as session:
             async with session.request(method, url, **kwargs) as response:
                 response.raise_for_status()
