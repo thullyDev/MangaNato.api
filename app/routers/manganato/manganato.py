@@ -78,9 +78,23 @@ async def get_filter_mangas(**kwargs) -> Union[Dict[str, Any], int]:
     mangas: List[Dict[str, Any]] = []
     get_filter_page_mangas(html=response, mangas=mangas, soup=soup)
 
+    pagination = get_pagination(soup)
+
     return {
-        "mangas": mangas
+        "mangas": mangas,
+        **pagination,
     }
+
+def get_pagination(soup) -> Dict[str, Dict[str, str]]:
+    pageEles = soup.select(".page-blue")
+    page = pageEles[0].text.replace("FIRST(", "").replace(")", "")
+    pages = pageEles[1].text.replace("LAST(", "").replace(")", "")
+    pagination = {
+        "pages": pages,
+        "page": page,
+    }
+
+    return { "pagination": pagination }
 
 async def get_search_mangas(**kwargs) -> Union[Dict[str, Any], int]:
     response: Any = await api.get(**kwargs,  html=True)
@@ -92,8 +106,11 @@ async def get_search_mangas(**kwargs) -> Union[Dict[str, Any], int]:
     mangas: List[Dict[str, Any]] = []
     get_search_page_mangas(html=response, mangas=mangas, soup=soup)
 
+    pagination = get_pagination(soup)
+
     return {
-        "mangas": mangas
+        "mangas": mangas,
+        **pagination,
     }
 
 async def get_top_mangas() -> Union[Dict[str, Any], int]:
