@@ -4,7 +4,7 @@ from fastapi import APIRouter, params
 from fastapi.responses import JSONResponse
 from app.handlers.response_handler import ResponseHandler
 from app.resources.errors import CRASH, NOT_FOUND
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Optional, Union
 from app.routers.manganato.manganato import (
      get_filter_mangas, 
      get_top_mangas, 
@@ -16,6 +16,21 @@ import requests
 
 router: APIRouter = APIRouter(prefix="/manga")
 response: ResponseHandler = ResponseHandler()
+
+@router.get("/filter")
+async def filter_mangas(
+     genre: Optional[str] = "genre-all", 
+     status: Optional[str] = None, 
+     _type: Optional[str] = "topview", 
+     ) -> JSONResponse:
+     params = { "type": _type }
+     if status:
+          params["state"] = status
+     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint=f"/{genre}", params=params)
+     if data == CRASH:
+          return response.bad_request_response()
+
+     return response.successful_response({"data": data })
 
 @router.get("/recent")
 async def recent_mangas() -> JSONResponse:
