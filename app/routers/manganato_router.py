@@ -34,34 +34,34 @@ async def filter_mangas(
      return response.successful_response({"data": data })
 
 @router.get("/recent")
-async def recent_mangas() -> JSONResponse:
-     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint="/genre-all")
+async def recent_mangas(page: Optional[str] = "") -> JSONResponse:
+     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint=f"/genre-all/{page}")
      return response.successful_response({"data": data })
 
 @router.get("/popular")
-async def popular_mangas() -> JSONResponse:
-     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint="/genre-all", params={"type": "topview"})
+async def popular_mangas(page: Optional[str] = "") -> JSONResponse:
+     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint=f"/genre-all/{page}", params={"type": "topview"})
      return response.successful_response({"data": data })
 
 @router.get("/newest")
-async def newest_mangas() -> JSONResponse:
-     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint="/genre-all", params={"type": "newest"})
+async def newest_mangas(page: Optional[str] = "") -> JSONResponse:
+     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint=f"/genre-all/{page}", params={"type": "newest"})
      return response.successful_response({"data": data })
 
 @router.get("/complete")
-async def complete_mangas() -> JSONResponse:
-     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint="/genre-all", params={"state": "completed", "type": "topview"})
+async def complete_mangas(page: Optional[str] = "") -> JSONResponse:
+     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint=f"/genre-all/{page}", params={"state": "completed", "type": "topview"})
      return response.successful_response({"data": data })
 
 
 @router.get("/ongoing")
-async def ongoing_mangas() -> JSONResponse:
-     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint="/genre-all", params={"state": "ongoing", "type": "topview"})
+async def ongoing_mangas(page: Optional[str] = "") -> JSONResponse:
+     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint=f"/genre-all/{page}", params={"state": "ongoing", "type": "topview"})
      return response.successful_response({"data": data })
 
-@router.get("/genres/{genre}")
-async def genre_mangas(genre: int) -> JSONResponse:
-     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint=f"/{genre}", params={"type": "topview"})
+@router.get("/genres/{genre}/")
+async def genre_mangas(genre: int, page: Optional[str] = "") -> JSONResponse:
+     data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint=f"/{genre}/{page}", params={"type": "topview"})
      if data == CRASH:
           return response.bad_request_response()
 
