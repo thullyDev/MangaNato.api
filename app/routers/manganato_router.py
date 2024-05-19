@@ -12,10 +12,33 @@ from app.routers.manganato.manganato import (
      get_manga,
      get_panels,
 )
+from fastapi.responses import FileResponse, StreamingResponse
 import requests
 
 router: APIRouter = APIRouter(prefix="/manga")
 response: ResponseHandler = ResponseHandler()
+
+
+def download_image_from_url(image_url: str) -> bytes:
+     headers = {
+         'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
+         'Referer': 'https://chapmanganato.to/',
+         'sec-ch-ua-mobile': '?0',
+         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+         'sec-ch-ua-platform': '"Linux"'
+     }
+     response = requests.get(image_url, headers=headers)
+     return response.content
+
+
+@router.get("/image")
+def image(image: Optional[str] = "") -> StreamingResponse:
+     image_url = 'https://v8.mkklcdnv6tempv3.com/img/tab_8/03/03/11/el981668/chapter_201/3-o.jpg'
+     image_bytes = download_image_from_url(image_url)
+     return StreamingResponse(iter([image_bytes]), media_type="image/jpeg")
+
+     # return FileResponse("app/routers/media/temp.jpg") # , media_type="image/jpg")
+
 
 @router.get("/filter")
 async def filter_mangas(
