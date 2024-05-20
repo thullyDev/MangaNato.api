@@ -1,10 +1,8 @@
 from typing import Any, Dict, List, Optional, Union
 from bs4 import BeautifulSoup
 from app.handlers.api_handler import ApiHandler
-from app.resources.errors import CRASH, NOT_FOUND
-from pprint import pprint
-from urllib import parse
-import base64
+from app.resources.errors import CRASH
+import requests
 
 api = ApiHandler("https://manganato.com")
 api2 = ApiHandler("https://chapmanganato.to")
@@ -229,3 +227,25 @@ def get_search_page_mangas(html: str, mangas: List[Dict[str, Any]], soup: Beauti
         })
 
 
+
+
+def download_image_from_url(image_url: Optional[str]) -> Union[None, bytes]:
+    if not image_url:
+        return None
+
+    headers = {
+        'sec-ch-ua': '"Not-A.Brand";v="99", "Chromium";v="124"',
+        'Referer': 'https://chapmanganato.to/',
+        'sec-ch-ua-mobile': '?0',
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'sec-ch-ua-platform': '"Linux"'
+     }
+
+    try:
+        response = requests.get(image_url, headers=headers)
+        pass
+    except Exception as e:
+        print(e)
+        return None
+    else:
+        return response.content
