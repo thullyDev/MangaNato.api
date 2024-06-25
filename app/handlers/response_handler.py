@@ -13,7 +13,7 @@ from ..resources import (
     BAD_REQUEST_MSG,
     BAD_REQUEST,
 )
-json
+
 class ResponseHandler:
     def json_response(self, status_code: int, data: Dict[str, Any]) -> JSONResponse:
         return JSONResponse(content=data, status_code=status_code) 

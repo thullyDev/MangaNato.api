@@ -11,7 +11,6 @@ class ApiHandler:
 
         async with aiohttp.ClientSession() as session:
             async with session.request(method, url, **kwargs) as response:
-                response.raise_for_status()
                 status_code: int = response.status
 
                 if status_code != SUCCESSFUL:

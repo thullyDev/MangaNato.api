@@ -11,7 +11,7 @@ async def get_manga(manga_id, **kwargs) -> Union[Dict[str, Any], int]:
     response: Any = await api2.get(**kwargs,  html=True)
     malsync_response: Any = await ApiHandler("https://api.malsync.moe").get(f"/page/MangaNato/{manga_id}")
 
-    if int in [type(malsync_response), type(response)]:
+    if int in [type(response)]:
         return CRASH
 
     soup: BeautifulSoup = get_soup(response)
@@ -51,6 +51,7 @@ async def get_manga(manga_id, **kwargs) -> Union[Dict[str, Any], int]:
             "slug": slug,
         })
 
+    malsync_response = malsync_response if type(malsync_response) is not int else {}   
     image_url = soup.select('.img-loading')[0].get('src')
 
     return {
