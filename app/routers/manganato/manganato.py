@@ -52,7 +52,7 @@ async def get_manga(manga_id, **kwargs) -> Union[Dict[str, Any], int]:
         })
 
     malsync_response = malsync_response if type(malsync_response) is not int else {}   
-    image_url = soup.select('.img-loading')[0].get('src')
+    image_url = soup.select('.story-info-left .img-loading')[0].get('src')
 
     return {
         "manga": {
