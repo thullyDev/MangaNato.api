@@ -34,9 +34,12 @@ async def filter_mangas(
      _type: Optional[str] = "topview", 
      ) -> JSONResponse:
      params = { "type": _type }
+     
      if status:
           params["state"] = status
+
      data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint=f"/{genre}/{page}", params=params)
+     
      if data == CRASH:
           return response.bad_request_response()
 

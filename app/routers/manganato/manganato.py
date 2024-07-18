@@ -86,12 +86,21 @@ async def get_filter_mangas(**kwargs) -> Union[Dict[str, Any], int]:
 
 def get_pagination(soup) -> Dict[str, Dict[str, str]]:
     pageEles = soup.select(".page-blue")
-    page = pageEles[0].text.replace("FIRST(", "").replace(")", "")
-    pages = pageEles[1].text.replace("LAST(", "").replace(")", "")
-    pagination = {
-        "pages": pages,
-        "page": page,
-    }
+    pagination = None
+
+    if not pageEles:
+        pagination = {
+            "pages": "1",
+            "page": "1",
+        }
+    else:
+        page = pageEles[0].text.replace("FIRST(", "").replace(")", "")
+        pages = pageEles[1].text.replace("LAST(", "").replace(")", "")
+
+        pagination = {
+            "pages": pages,
+            "page": page,
+        }
 
     return { "pagination": pagination }
 
@@ -103,7 +112,7 @@ async def get_search_mangas(**kwargs) -> Union[Dict[str, Any], int]:
 
     soup: BeautifulSoup = get_soup(response)
     mangas: List[Dict[str, Any]] = []
-    get_search_page_mangas(html=response, mangas=mangas, soup=soup)
+    get_search_page_mangas(mangas=mangas, soup=soup)
 
     pagination = get_pagination(soup)
 
@@ -197,7 +206,7 @@ def get_filter_page_mangas(html: str, mangas: List[Dict[str, Any]], soup: Beauti
             "score": score,
         })
 
-def get_search_page_mangas(html: str, mangas: List[Dict[str, Any]], soup: BeautifulSoup) -> None:
+def get_search_page_mangas(mangas: List[Dict[str, Any]], soup: BeautifulSoup) -> None:
     items: List = soup.select('.search-story-item')
     for item in items:
         chap_ele = item.select('.item-chapter.text-nowrap.a-h')[0]
