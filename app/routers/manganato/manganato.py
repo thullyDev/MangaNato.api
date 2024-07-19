@@ -75,6 +75,7 @@ async def get_filter_mangas(**kwargs) -> Union[Dict[str, Any], int]:
 
     soup: BeautifulSoup = get_soup(response)
     mangas: List[Dict[str, Any]] = []
+    # print(soup)
     get_filter_page_mangas(html=response, mangas=mangas, soup=soup)
 
     pagination = get_pagination(soup)

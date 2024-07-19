@@ -31,12 +31,16 @@ async def filter_mangas(
      genre: Optional[str] = "genre-all", 
      page: Optional[str] = "", 
      status: Optional[str] = None, 
-     _type: Optional[str] = "topview", 
+     _type: Optional[str] = None, 
      ) -> JSONResponse:
-     params = { "type": _type }
+     params = {}
      
      if status:
           params["state"] = status
+
+     if _type:
+          params["type"] = _type
+
 
      data: Union[Dict[str, Any], int] = await get_filter_mangas(endpoint=f"/{genre}/{page}", params=params)
      
