@@ -75,7 +75,6 @@ async def get_filter_mangas(**kwargs) -> Union[Dict[str, Any], int]:
 
     soup: BeautifulSoup = get_soup(response)
     mangas: List[Dict[str, Any]] = []
-    # print(soup)
     get_filter_page_mangas(html=response, mangas=mangas, soup=soup)
 
     pagination = get_pagination(soup)
@@ -95,7 +94,7 @@ def get_pagination(soup) -> Dict[str, Dict[str, str]]:
             "page": "1",
         }
     else:
-        page = pageEles[0].text.replace("FIRST(", "").replace(")", "")
+        page = soup.select(".page-select")[0].text
         pages = pageEles[1].text.replace("LAST(", "").replace(")", "")
 
         pagination = {

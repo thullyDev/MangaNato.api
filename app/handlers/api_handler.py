@@ -19,7 +19,6 @@ class ApiHandler:
             return response.content
 
         if html:
-            # print(response.text)
             return response.text
 
         return response.json()
