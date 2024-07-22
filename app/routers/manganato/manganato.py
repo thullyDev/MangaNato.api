@@ -11,7 +11,7 @@ async def get_manga(manga_id, **kwargs) -> Union[Dict[str, Any], int]:
     response: Any = await api2.get(**kwargs,  html=True)
     malsync_response: Any = await ApiHandler("https://api.malsync.moe").get(f"/page/MangaNato/{manga_id}")
 
-    if int in [type(malsync_response), type(response)]:
+    if int in [type(response)]:
         return CRASH
 
     soup: BeautifulSoup = get_soup(response)
@@ -51,7 +51,8 @@ async def get_manga(manga_id, **kwargs) -> Union[Dict[str, Any], int]:
             "slug": slug,
         })
 
-    image_url = soup.select('.img-loading')[0].get('src')
+    malsync_response = malsync_response if type(malsync_response) is not int else {}   
+    image_url = soup.select('.story-info-left .img-loading')[0].get('src')
 
     return {
         "manga": {
@@ -85,12 +86,22 @@ async def get_filter_mangas(**kwargs) -> Union[Dict[str, Any], int]:
 
 def get_pagination(soup) -> Dict[str, Dict[str, str]]:
     pageEles = soup.select(".page-blue")
-    page = pageEles[0].text.replace("FIRST(", "").replace(")", "")
-    pages = pageEles[1].text.replace("LAST(", "").replace(")", "")
-    pagination = {
-        "pages": pages,
-        "page": page,
-    }
+    currentPageEles = soup.select(".page-select")
+    pagination = None
+
+    if not pageEles or not currentPageEles:
+        pagination = {
+            "pages": "1",
+            "page": "1",
+        }
+    else:
+        page = currentPageEles[0].text
+        pages = pageEles[1].text.replace("LAST(", "").replace(")", "")
+
+        pagination = {
+            "pages": pages,
+            "page": page,
+        }
 
     return { "pagination": pagination }
 
@@ -102,7 +113,7 @@ async def get_search_mangas(**kwargs) -> Union[Dict[str, Any], int]:
 
     soup: BeautifulSoup = get_soup(response)
     mangas: List[Dict[str, Any]] = []
-    get_search_page_mangas(html=response, mangas=mangas, soup=soup)
+    get_search_page_mangas(mangas=mangas, soup=soup)
 
     pagination = get_pagination(soup)
 
@@ -196,7 +207,7 @@ def get_filter_page_mangas(html: str, mangas: List[Dict[str, Any]], soup: Beauti
             "score": score,
         })
 
-def get_search_page_mangas(html: str, mangas: List[Dict[str, Any]], soup: BeautifulSoup) -> None:
+def get_search_page_mangas(mangas: List[Dict[str, Any]], soup: BeautifulSoup) -> None:
     items: List = soup.select('.search-story-item')
     for item in items:
         chap_ele = item.select('.item-chapter.text-nowrap.a-h')[0]

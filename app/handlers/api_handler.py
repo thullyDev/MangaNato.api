@@ -1,4 +1,5 @@
-import aiohttp
+import asyncio
+import requests
 from typing import Dict, Any, Union
 from ..resources import SUCCESSFUL
 
@@ -6,24 +7,21 @@ class ApiHandler:
     def __init__(self, BASE: str):
         self.BASE = BASE
 
-    async def request(self, endpoint: str, method: str = 'GET', image: bool =False, html: bool = False, **kwargs: Any) -> Union[Dict[str, Any], str, int, bytes]:
+    async def request(self, endpoint: str, method: str = 'GET', image: bool = False, html: bool = False, **kwargs: Any) -> Union[Dict[str, Any], str, int, bytes]:
         url = self.BASE + endpoint
+        response = requests.request(method, url, **kwargs)
+        status_code: int = response.status_code
 
-        async with aiohttp.ClientSession() as session:
-            async with session.request(method, url, **kwargs) as response:
-                response.raise_for_status()
-                status_code: int = response.status
+        if status_code != SUCCESSFUL:
+            return status_code
+            
+        if image:
+            return response.content
 
-                if status_code != SUCCESSFUL:
-                    return status_code
-                    
-                if image == True:
-                    return await response.read()
+        if html:
+            return response.text
 
-                if html == True:
-                    return await response.text() 
-
-                return await response.json() 
+        return response.json()
 
     async def get(self, endpoint: str, *, params: Dict[str, Any] = {}, **kwargs: Any) -> Union[Dict[str, Any], str, int, bytes]:
         return await self.request(endpoint, params=params, method='GET', **kwargs)
